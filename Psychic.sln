@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29728.190
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Psychic", "Psychic.csproj", "{58A12254-A9B0-4A41-BB1F-6E6C6083442F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{58A12254-A9B0-4A41-BB1F-6E6C6083442F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58A12254-A9B0-4A41-BB1F-6E6C6083442F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58A12254-A9B0-4A41-BB1F-6E6C6083442F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58A12254-A9B0-4A41-BB1F-6E6C6083442F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D7EE5C4B-579E-46E5-911B-39EA3CC838DB}
+	EndGlobalSection
+EndGlobal

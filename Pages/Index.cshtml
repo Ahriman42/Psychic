@@ -1,0 +1,69 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <div class="text-center">
+                <h1 class="display-4">Битва экстрасенсов!</h1>
+                <p>Загадайте двузначное число, которое наши экстрасенсы угадают.</p>
+                <form method="post">
+                    @if (Model.isPlay)
+                    {
+                        <input type="submit" value="Загадал" />
+                    }
+                    else
+                    {
+                        <div>Какое число вы загадали?</div>
+                        <input type="number" name="digit" />
+                        <input type="submit" value="ОК" />
+                    }
+                </form>
+            </div>
+            <div class="row mt-3">
+                <div class="col-sm text-center">
+                    <p>Ответ: @Model.psy1.Answer</p>
+                    <p class="font-weight-bold">@Model.psy1.Name</p>
+                    <p>Достоверность: @Model.psy1.Power %</p>
+                    <p>Список ответов:</p>
+                    @foreach (int i in Model.psy1.AnswersList)
+                    {
+                        <p>@i</p>
+                    }
+                </div>
+                <div class="col-sm text-center">
+                    <p>Ответ: @Model.psy2.Answer</p>
+                    <p class="font-weight-bold">@Model.psy2.Name</p>
+                    <p>Достоверность: @Model.psy2.Power %</p>
+                    <p>Список ответов:</p>
+                    @foreach (int i in Model.psy2.AnswersList)
+                    {
+                        <p>@i</p>
+                    }
+                </div>
+                <div class="col-sm text-center">
+                    <p>Ответ: @Model.psy3.Answer</p>
+                    <p class="font-weight-bold">@Model.psy3.Name</p>
+                    <p>Достоверность: @Model.psy3.Power %</p>
+                    <p>Список ответов:</p>
+                    @foreach (int i in Model.psy3.AnswersList)
+                    {
+                        <p>@i</p>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-sm">
+            <div class="text-center">
+                <h2>Загаданные числа:</h2>
+                @foreach (int i in Model.playerNumbersList)
+                {
+                    <p>@i</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
