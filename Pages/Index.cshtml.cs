@@ -11,106 +11,96 @@ namespace Psychic.Pages
 {
     public class IndexModel : PageModel
     {
+        // Перечисление для определения действия в сессии
+        enum SessionActions
+        {
+            Write,
+            Read
+        }
+
         // Переменная для проверки открытой сессии
         const string SessionKeyName = "MySession";
 
         // Переменная для числа, загаданного игроком
         [BindProperty(Name = "digit")]
-        public int playerNumber { get; set; }
+        public int PlayerNumber { get; set; }
 
-        // Три экстрасенса
-        public PsychicMan psy1, psy2, psy3;
+        // Список экстрасенсов
+        public List<PsychicMan> psyList = new List<PsychicMan>()
+        {
+            new PsychicMan("Петр Иванович"),
+            new PsychicMan("Иван Сидорович"),
+            new PsychicMan("Сидор Петрович")
+        };
 
         // true - игрок должен загадать число (режим "загадывания")
         // false - игрок должен ввести загаданное число (режим ввода)
         public bool isPlay = true;
+        bool isSessionOpen;
 
         // Список загаданных игроком чисел
-        public List<int> playerNumbersList;
-
-        private readonly ILogger<IndexModel> _logger;
-
-        public IndexModel(ILogger<IndexModel> logger)
-        {
-            _logger = logger;
-            
-        }
+        public List<int> playerNumbersList = new List<int>();
 
         public void OnGet()
         {
+            isSessionOpen = string.IsNullOrEmpty(HttpContext.Session.GetString(SessionKeyName));
+
             // Проверяем, была ли открыта сессия
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString(SessionKeyName)))
+            if (isSessionOpen)
             {
                 // Если сессия не открыта, то открываем ее через ключевую строку
                 HttpContext.Session.SetString(SessionKeyName, "Ok");
 
-                // Отображаем данные об экстрасенсах по умолчанию
-                psy1 = new PsychicMan("Петр Иванович");
-                psy2 = new PsychicMan("Иван Сидорович");
-                psy3 = new PsychicMan("Сидор Петрович");
-
-                // Создаем список загаданных игроком чисел
-                playerNumbersList = new List<int>();
-
-                // Записываем данные об экстрасенсах в сессию
-                WriteInSession_Psy(psy1, psy2, psy3);
-
-                // Записываем список загаданных игроком чисел в сессию
+                // Записываем данные в сессию
+                ChangeSession_Psy(psyList, (int)SessionActions.Write);
                 HttpContext.Session.Set<List<int>>("playerNumbersList", playerNumbersList);
-
-                // Устанавливаем режим "загадывания" и записываем его в сессию
-                isPlay = true;
                 HttpContext.Session.Set("isPlay", isPlay);
             }
             else
             {
                 // Если сессия уже была открыта, то считываем все данные из нее
-                WriteFromSession_Psy(ref psy1, ref psy2, ref psy3);
+                ChangeSession_Psy(psyList, (int)SessionActions.Read);
                 playerNumbersList = HttpContext.Session.Get<List<int>>("playerNumbersList");
                 isPlay = HttpContext.Session.Get<bool>("isPlay");
             }
         }
         public ActionResult OnPost()
         {
-            // Считываем данные из сессии об экстрасенсах
-            WriteFromSession_Psy(ref psy1, ref psy2, ref psy3);
+            // Считываем данные из сессии
+            ChangeSession_Psy(psyList, (int)SessionActions.Read);
+            playerNumbersList = HttpContext.Session.Get<List<int>>("playerNumbersList");
+            isPlay = HttpContext.Session.Get<bool>("isPlay");
 
             // Проверяем режим - "загадывание" или ввод
-            if (HttpContext.Session.Get<bool>("isPlay"))
+            if (isPlay)
             {
                 // Каждый экстрасенс выбирает свой ответ
-                psy1.SetAnswer(0);
-                psy2.SetAnswer(1);
-                psy3.SetAnswer(2);
+                for (int i = 0; i < psyList.Count; i++)
+                {
+                    psyList[i].SetAnswer(i);
+                }
 
                 // Меняем режим на "ввод"
                 isPlay = false;
-               
             }
             else
             {
-                // Считываем список загаданных игроком чисел из сессии
-                playerNumbersList = HttpContext.Session.Get<List<int>>("playerNumbersList");
-
                 // Добавляем в список текущее загаданное число 
-                playerNumbersList.Add(playerNumber);
+                playerNumbersList.Add(PlayerNumber);
 
                 // Вычисляем достоверность каждого экстрасенса
-                psy1.SetPower(playerNumbersList);
-                psy2.SetPower(playerNumbersList);
-                psy3.SetPower(playerNumbersList);
+                foreach (PsychicMan i in psyList)
+                {
+                    i.SetPower(playerNumbersList);
+                }
 
                 // Меняем режим на "загадывание"
                 isPlay = true;
-
-                // Записываем список загаданных игроком чисел в сессию
-                HttpContext.Session.Set<List<int>>("playerNumbersList", playerNumbersList);
             }
 
-            // Записываем данные об экстрасенсах в сессию
-            WriteInSession_Psy(psy1, psy2, psy3);
-
-            // Записываем текущий режим игры в сессию
+            // Записываем данные об в сессию
+            ChangeSession_Psy(psyList, (int)SessionActions.Write);
+            HttpContext.Session.Set<List<int>>("playerNumbersList", playerNumbersList);
             HttpContext.Session.Set("isPlay", isPlay);
 
             // Реализуем паттерн PRG (Post - Redirect - Get), чтобы при обновлении страницы не срабатывал Post 
@@ -118,29 +108,27 @@ namespace Psychic.Pages
         }
 
         /// <summary>
-        /// Записать данные об экстрасенсах из сессии
+        /// Метод для работы с сессией.
         /// </summary>
-        /// <param name="_psy1">Первый экстрасенс</param>
-        /// <param name="_psy2">Второй экстрасенс</param>
-        /// <param name="_psy3">Третий экстрасенс</param>
-        public void WriteFromSession_Psy(ref PsychicMan _psy1, ref PsychicMan _psy2, ref PsychicMan _psy3)
+        /// <param name="_psyList">Список экстрасенсов</param>
+        /// <param name="_actionType">Тип действия, 0 - записать в сессию, 1 - считать из сессии</param>
+        public void ChangeSession_Psy(List<PsychicMan> _psyList, int _actionType)
         {
-            _psy1 = HttpContext.Session.Get<PsychicMan>("psy1");
-            _psy2 = HttpContext.Session.Get<PsychicMan>("psy2");
-            _psy3 = HttpContext.Session.Get<PsychicMan>("psy3");
-        }
-
-        /// <summary>
-        /// Записать данные об экстрасенсах в сессию
-        /// </summary>
-        /// <param name="_psy1">Первый экстрасенс</param>
-        /// <param name="_psy2">Второй экстрасенс</param>
-        /// <param name="_psy3">Третий экстрасенс</param>
-        public void WriteInSession_Psy(PsychicMan _psy1, PsychicMan _psy2, PsychicMan _psy3)
-        {
-            HttpContext.Session.Set<PsychicMan>("psy1", _psy1);
-            HttpContext.Session.Set<PsychicMan>("psy2", _psy2);
-            HttpContext.Session.Set<PsychicMan>("psy3", _psy3);
+            switch (_actionType)
+            {
+                case 0:
+                    foreach (PsychicMan i in _psyList)
+                    {
+                        HttpContext.Session.Set<PsychicMan>(i.Name, i);
+                    }
+                    break;
+                case 1:
+                    for (int i = 0; i < _psyList.Count(); i++)
+                    {
+                        _psyList[i] = HttpContext.Session.Get<PsychicMan>(_psyList[i].Name);
+                    }
+                    break;
+            }
         }
     }
 }

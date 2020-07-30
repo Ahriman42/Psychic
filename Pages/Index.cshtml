@@ -13,47 +13,30 @@
                 <form method="post">
                     @if (Model.isPlay)
                     {
-                        <input type="submit" value="Загадал" />
+                        <input type="submit" value="Загадал"/>
                     }
                     else
                     {
                         <div>Какое число вы загадали?</div>
-                        <input type="number" name="digit" />
+                        <input type="number" name="digit" max="99" min="10" />
                         <input type="submit" value="ОК" />
                     }
                 </form>
             </div>
             <div class="row mt-3">
-                <div class="col-sm text-center">
-                    <p>Ответ: @Model.psy1.Answer</p>
-                    <p class="font-weight-bold">@Model.psy1.Name</p>
-                    <p>Достоверность: @Model.psy1.Power %</p>
-                    <p>Список ответов:</p>
-                    @foreach (int i in Model.psy1.AnswersList)
-                    {
-                        <p>@i</p>
-                    }
-                </div>
-                <div class="col-sm text-center">
-                    <p>Ответ: @Model.psy2.Answer</p>
-                    <p class="font-weight-bold">@Model.psy2.Name</p>
-                    <p>Достоверность: @Model.psy2.Power %</p>
-                    <p>Список ответов:</p>
-                    @foreach (int i in Model.psy2.AnswersList)
-                    {
-                        <p>@i</p>
-                    }
-                </div>
-                <div class="col-sm text-center">
-                    <p>Ответ: @Model.psy3.Answer</p>
-                    <p class="font-weight-bold">@Model.psy3.Name</p>
-                    <p>Достоверность: @Model.psy3.Power %</p>
-                    <p>Список ответов:</p>
-                    @foreach (int i in Model.psy3.AnswersList)
-                    {
-                        <p>@i</p>
-                    }
-                </div>
+                @foreach (PsychicMan i in Model.psyList)
+                {
+                    <div class="col-sm text-center">
+                        <p>Ответ: @i.Answer</p>
+                        <p class="font-weight-bold">@i.Name</p>
+                        <p>Достоверность: @i.Power %</p>
+                        <p>Список ответов:</p>
+                        @foreach (int a in i.AnswersList)
+                        {
+                            <p>@a</p>
+                        }
+                    </div>
+                }
             </div>
         </div>
         <div class="col-sm">

@@ -15,7 +15,7 @@ namespace Psychic
         // Достоверность экстрасенса
         public int Power { get; set; }
         // Количество правильных ответов экстрасенса
-        public int correctAnswers { get; set; }
+        public int CorrectAnswers { get; set; }
         // Текущий ответ экстрасенса
         public int Answer { get; set; }
         // Список ответов экстрасенса
@@ -39,22 +39,13 @@ namespace Psychic
         public void SetAnswer(int _counter)
         {
             Random rnd = new Random();
-            int answer;
-            switch (_counter)
+            int answer = _counter switch
             {
-                case 0:
-                    answer = rnd.Next(10, 100);
-                    break;
-                case 1:
-                    answer = rnd.Next(10, 50);
-                    break;
-                case 2:
-                    answer = rnd.Next(50, 100);
-                    break;
-                default:
-                    answer = 0;
-                    break;
-            }
+                0 => rnd.Next(10, 100),
+                1 => rnd.Next(10, 50),
+                2 => rnd.Next(50, 100),
+                _ => 0,
+            };
             AnswersList.Add(answer);
             Answer = answer;
         }
@@ -67,9 +58,9 @@ namespace Psychic
         {
             if(Answer == _playerAnswers.Last())
             {
-                correctAnswers++;
+                CorrectAnswers++;
             }
-            Power = (int)(((double)correctAnswers / _playerAnswers.Count()) * 100);
+            Power = (int)(((double)CorrectAnswers / _playerAnswers.Count()) * 100);
         }
     }
 }
