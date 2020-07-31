@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
 
 namespace Psychic.Pages
 {
@@ -37,6 +34,7 @@ namespace Psychic.Pages
         // false - игрок должен ввести загаданное число (режим ввода)
         public bool isPlay = true;
         bool isSessionOpen;
+        int dfdfdf;
 
         // Список загаданных игроком чисел
         public List<int> playerNumbersList = new List<int>();
